@@ -49,7 +49,7 @@ env:
 #    - HOST=x86_64-w64-mingw32 DPKG_ADD_ARCH="i386" DEP_OPTS="NO_QT=1" PPA="ppa:bitcoin/bitcoin" PACKAGES="python3 nsis g++-mingw-w64-x86-64 wine1.7 bc" RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-gui --enable-reduce-exports" MAKEJOBS="-j4" WINE=true
 # dashd
 #    - HOST=x86_64-unknown-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="bc python3-zmq" DEP_OPTS="NO_QT=1 NO_UPNP=1 DEBUG=1" RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-zmq --enable-glibc-back-compat --enable-reduce-exports" CPPFLAGS="-DDEBUG_LOCKORDER -DENABLE_DASH_DEBUG" PYZMQ=true
-    - HOST=x86_64-unknown-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="bc python3-zmq" DEP_OPTS="NO_QT=1 NO_UPNP=1" RUN_TESTS=false GOAL="install" BITCOIN_CONFIG="--enable-zmq --enable-glibc-back-compat --enable-reduce-exports" CPPFLAGS="-DDEBUG_LOCKORDER -DENABLE_DASH_DEBUG" PYZMQ=true
+    - HOST=x86_64-unknown-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="bc python3-zmq" DEP_OPTS="" RUN_TESTS=false GOAL="install" BITCOIN_CONFIG="--enable-zmq --enable-glibc-back-compat --enable-reduce-exports" CPPFLAGS="-DDEBUG_LOCKORDER -DENABLE_DASH_DEBUG" PYZMQ=true
 # No wallet
 #    - HOST=x86_64-unknown-linux-gnu PPA="ppa:bitcoin/bitcoin" PACKAGES="python3" DEP_OPTS="NO_WALLET=1" RUN_TESTS=true GOAL="install" BITCOIN_CONFIG="--enable-glibc-back-compat --enable-reduce-exports"
 # Cross-Mac
@@ -89,14 +89,14 @@ script:
     - if [ "$RUN_TESTS" = "true" -a "$WINE" != "true" ]; then make $MAKEJOBS check VERBOSE=1; fi
     - if [ "$RUN_TESTS" = "true" -a "$WINE" = "true" ]; then wine  src/test/test_dash.exe; fi
     - if [ "$RUN_TESTS" = "true" ]; then qa/pull-tester/rpc-tests.py --coverage; fi
-    - cd $BASE_OUTDIR/$TRAVIS_PULL_REQUEST/ && tar czvf $TRAVIS_BUILD_DIR/$TEST_BUILD_NAME.tgz $TEST_BUILD_NAME
+    - cd $BASE_OUTDIR/$TRAVIS_PULL_REQUEST/ && tar czvf $TRAVIS_BUILD_DIR/$TEST_BUILD_NAME-with-qt.tgz $TEST_BUILD_NAME
 after_script:
     - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then (echo "Upload goes here. Something like: scp -r $BASE_OUTDIR server" || echo "upload failed"); fi
 deploy:
   provider: releases
   api_key:
     secure: inRxRByTS41cGZ/Ah61KRTxUJ4bs7lEefpNtYYaVkoRKs+XBFMCm8uR2bs5huF2ikDGHQAddOkBxD3OiutBqlNqm4E+jIdtwOX/PDb/kdABCT7iV2QAaJKQAMNqiA038eyzfmexOu2jIe0o+lLsWDqyb2/tZo1ruV1f18CNAhKBr+sm5S0dpvsP6nXzb2WHcNRHNeJlawDcvfxtWaP3z4t/vD8bLiJBlsq5A22YT3lwP4Gf6FvvuFAHiNDZugU8zcpDu1/Wu2xapiU4mAvJhfhgKunUdhozg3bn7y9GWohd5yqFLOKrFEKCXwMt2eMZZpis/Uk4I5E6tg3DisO06MvgW6HcWUdQljdCfJo2nNAhSzL2iRptSoRsYmDT7weLfu3ce4YfKv1ZwkTYtWuF4Sb9S28ArnQunYDe2CE0mXD9cDjh6ccUCOSYIZMnyw07mD9sLSX8LA22yUuSkfJWa5R/Faf3/3mK3ukp5zmyzDbX8CiGaIgbMqIFpdS9iCt+gTy5xb24zAMgzEYd2cEicJRvWalby40gMmuOOQ2DGA0dZpcgcTPLUE0KiC5JQqC6mGbBa/O2P0NrJy0rJVu/T4bRY4eQtZiq8jF4ZCdY43n5JSuNdlwbFeKRBIOTlWOeYGZupDtpBKBeZQHC/2/rwdDPhVs8WtwGhaTZQigomd+k=
-  file: /home/travis/build/zebra-lucky/dash/$TEST_BUILD_NAME.tgz
+  file: /home/travis/build/zebra-lucky/dash/$TEST_BUILD_NAME-with-qt.tgz
   skip_cleanup: true
   on:
     repo: zebra-lucky/dash
